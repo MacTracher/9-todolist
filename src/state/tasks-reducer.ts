@@ -3,16 +3,6 @@ import {v1} from "uuid";
 import {addTodolistAC, AddTodolistActionType, RemoveTodolistActionType} from "./todolists-reducer";
 import {Delete} from "@mui/icons-material";
 
-
-let todolistID1 = v1()
-let todolistID2 = v1()
-
-const initialState: TodolistType[] = [
-    {id: todolistID1, title: 'What to learn', filter: 'all'},
-    {id: todolistID2, title: 'What to buy', filter: 'all'},
-]
-
-
 // Actions types
 export type RemoveTaskActionType = ReturnType<typeof removeTaskAC>
 
@@ -24,12 +14,12 @@ export type ChangeTaskTitleActionType = ReturnType<typeof changeTaskTitleAC>
 
 
 
-
 type ActionsType = RemoveTaskActionType
-    | AddTaskActionType | ChangeTaskStatusActionType | ChangeTaskTitleActionType | AddTodolistActionType | RemoveTodolistActionType
+    | AddTaskActionType | ChangeTaskStatusActionType | ChangeTaskTitleActionType | AddTodolistActionType | RemoveTodolistActionType;
 
+const initialState: TasksStateType = {}
 
-export const tasksReducer = (state: TasksStateType, action: ActionsType) => {
+export const tasksReducer = (state = initialState, action: ActionsType): TasksStateType => {
     switch (action.type) {
         case 'REMOVE-TASK': {
             return {
@@ -92,7 +82,7 @@ export const tasksReducer = (state: TasksStateType, action: ActionsType) => {
 
 
         default:
-            throw new Error("I don't understand this type")
+            return state
     }
 }
 
