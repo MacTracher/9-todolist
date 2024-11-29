@@ -1,5 +1,5 @@
 import {FilterValuesType, TaskType} from "./App";
-import {ChangeEvent} from "react";
+import {ChangeEvent, memo, useCallback} from "react";
 import {AddItemForm} from "./AddItemForm";
 import {EditableSpan} from "./EditableSpan";
 import IconButton from '@mui/material/IconButton';
@@ -10,6 +10,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import Box from "@mui/material/Box";
 import {filterButtonsContainerSx, getListItemSx} from "./Todolist.styles";
+import {FilterButtons} from "./FilterButtons";
 
 
 type PropsType = {
@@ -26,10 +27,11 @@ type PropsType = {
 	updateTodolist: (todolistId: string, title: string) => void
 }
 
-export const Todolist = (props: PropsType) => {
+export const Todolist = memo((props: PropsType) => {
+
 	const {
 		title,
-		tasks,
+
 		filter,
 		removeTask,
 		changeFilter,
@@ -41,20 +43,30 @@ export const Todolist = (props: PropsType) => {
 		updateTodolist
 	} = props
 
-	const changeFilterTasksHandler = (filter: FilterValuesType) => {
+	const changeFilterTasksHandler = useCallback((filter: FilterValuesType) => {
 		changeFilter(filter, props.todolistId)
-	}
+	},[props.todolistId])
 
 	const removeTodolistHandler = () => {
 		removeTodolist(todolistId)
 	}
 
-	const addTaskCallback = (title: string) => {
+	const addTaskCallback = useCallback((title: string) => {
 		addTask(title, props.todolistId)
-	}
+	},[addTask,props.todolistId])
 
 	const updateTodolistHandler = (title: string) => {
 		updateTodolist(props.todolistId, title)
+	}
+
+	let tasks = props.tasks
+
+	if (props.filter === 'active') {
+		tasks = tasks.filter(task => !task.isDone)
+	}
+
+	if (props.filter === 'completed') {
+		tasks = tasks.filter(task => task.isDone)
 	}
 
 	return (
@@ -97,25 +109,8 @@ export const Todolist = (props: PropsType) => {
 					</List>
 			}
 			<Box sx={filterButtonsContainerSx}>
-				<Button
-					variant={filter === 'all' ? 'outlined' : 'text'}
-					color={'inherit'}
-					onClick={() => changeFilterTasksHandler('all')}>
-					All
-				</Button>
-				<Button
-					variant={filter === 'active' ? 'outlined' : 'text'}
-					color={'primary'}
-					onClick={() => changeFilterTasksHandler('active')}>
-					Active
-				</Button>
-				<Button
-					variant={filter === 'completed' ? 'outlined' : 'text'}
-					color={'secondary'}
-					onClick={() => changeFilterTasksHandler('completed')}>
-					Completed
-				</Button>
+				<FilterButtons filter={filter} changeFilterTasksHandler={changeFilterTasksHandler}/>
 			</Box>
 		</div>
 	)
-}
+})
